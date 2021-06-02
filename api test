@@ -1,0 +1,53 @@
+*** Settings ***
+Library       REST    http://10.225.3.32/bpmn/swagger-ui.html#/suite-controller/listFeatureUsingPOST  ssl_verify=false
+Library    SeleniumLibrary
+Library    OperatingSystem
+Library    RequestsLibrary
+Library    Collections
+Library    HttpLibrary
+Library    json
+
+
+*** Variables ***
+${user}    "*****"
+${pass}    "1wdqd"
+${base_url2}     http://10.225.236.8/
+${base_url}      http://10.225.3.12:3120
+${token1}        eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsaWwxoMDkiLCJpc3MiOiI0NSIsImF1ZCI6IlJPTEVfUkVWSUVXRVIiLCJleHAiOjE2MTkzNDI1NjN9.Wy6a3jquVNemlKh0bIo4h227LbeVB899NRPIUlLoa8nm4nkm0lLNOXi_7ShqyMBuHvtF9BdK8NUJ-rqIPifHVA
+${token}         eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJsawx5oMDkiLCJpc3MiOiI0NSIsImF1ZCI6IlJPTEVfUkVWSUVXRVIiLCJleHAiOjE2MTc2MTgwMjR9.uX39f45wOF-vTnhD7yHw9M2Z12rZ3m__eOokTjI2FqIxB9cu0hVMdUZD8RgwCLfwtkzb6m1iJzflATjMNAnuIw
+*** Test Cases ***
+TestHeaders
+    create session  mysession  ${base_url2}
+    ${headers}  create dictionary     Authorization=${token1}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=/bpmn/user/list-suite-tree?projectId=1     headers=${headers}
+    log to console   ${response.json()}
+TestHeaders1
+    create session  mysession  ${base_url2}
+    ${headers}  create dictionary     Authorization=${token1}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=/bpmn/user/list-by-suite?suiteId=187     headers=${headers}
+    log to console   ${response.json()}
+TestHeaders2
+    [Tags]  test feature api
+    create session  mysession  ${base_url2}
+    ${headers}  create dictionary     Authorization=${token1}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=/bpmn/suite/list?projectId=1     headers=${headers}
+    log to console   ${response.json().get("id:209")}
+TestHeaders3
+    [Tags]  suite api
+    create session  mysession  ${base_url}
+    ${headers}  create dictionary     Authorization=${token}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=/bpmn/user/list-by-suite?suiteId=187      headers=${headers}
+    log to console   ${response.json()}
+TestHeaders4
+    [Tags]  Project tab API
+    create session  mysession  ${base_url}
+    ${headers}  create dictionary     Authorization=${token}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=/bpmn/suite-collection/list?projectId=1   headers=${headers}
+    log to console   ${response.json()}
+TestHeaders5
+    [Tags]  Project tab API
+    create session  mysession  ${base_url2}
+    ${headers}  create dictionary     Authorization=${token1}    Content-Type=application/json
+    ${response}=  GET On Session  mysession  url=bpmn/suite-collection/search-collection-item?suiteId=209   headers=${headers}
+    log to console   ${response.json()}
+    Log To Console
